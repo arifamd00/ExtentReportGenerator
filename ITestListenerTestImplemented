@@ -1,0 +1,71 @@
+package Template.com.template.app;
+
+import java.io.IOException;
+
+import org.testng.ITestContext;
+import org.testng.ITestListener;
+import org.testng.ITestResult;
+import org.testng.xml.XmlTest;
+
+import base.BaseClass;
+import utilities.ExtentReportUtils;
+
+public class ITestListenerTest implements ITestListener{
+
+	@Override
+	public void onTestStart(ITestResult result) {
+		
+		System.out.println(result.getMethod().findMethodParameters(result.getTestContext().getCurrentXmlTest()).get("browser"));
+		
+		//System.out.println(result.getMethod().findMethodParameters(result.getTestContext().getCurrentXmlTest()).get("browser"));
+		
+		//System.out.println("Parameters "+result.getTestContext().getSuite().getParameter("browser1"));// TODO Auto-generated method stub
+		try {
+			ExtentReportUtils.test = ExtentReportUtils.extent.createTest(result.getName()).assignCategory(result.getTestContext().getName()).assignDevice(result.getTestContext().getCurrentXmlTest().getLocalParameters().get("browser")).assignAuthor("Ahmed");
+		}catch(NullPointerException e){
+			
+			System.out.println(e.getMessage());
+		}//String.valueOf(result.getParameters()[0])
+		
+	}
+
+	@Override
+	public void onTestSuccess(ITestResult result) {
+		// TODO Auto-generated method stub
+		ExtentReportUtils.publishToExtentReport(result);
+	}
+
+	@Override
+	public void onTestFailure(ITestResult result) {
+		// TODO Auto-generated method stub
+		 try{
+		    	ExtentReportUtils.destination = BaseClass.takeSnapshot("test1");
+		    }catch(IOException io) {
+		    	System.out.println(io.getMessage());
+		    }
+		ExtentReportUtils.publishToExtentReport(result);
+		
+	}
+
+	@Override
+	public void onTestSkipped(ITestResult result) {
+		// TODO Auto-generated method stub
+		ExtentReportUtils.publishToExtentReport(result);
+	}
+
+	@Override
+	public void onStart(ITestContext context) {
+		//ExtentReportUtils.initExtentReport();
+		System.out.println("initalise the report from onstart method");
+	}
+
+	@Override
+	public void onFinish(ITestContext context) {
+		// TODO Auto-generated method stub
+		//ExtentReportUtils.endReport();
+		System.out.println("Test Level onfinish method");
+	}
+	
+	
+
+}
