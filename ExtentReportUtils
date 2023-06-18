@@ -1,0 +1,52 @@
+package utilities;
+
+import org.testng.ITestResult;
+
+import com.aventstack.extentreports.ExtentReports;
+import com.aventstack.extentreports.ExtentTest;
+import com.aventstack.extentreports.Status;
+import com.aventstack.extentreports.reporter.ExtentSparkReporter;
+import com.aventstack.extentreports.reporter.configuration.Theme;
+
+public class ExtentReportUtils {
+	
+	public static ExtentSparkReporter htmlReporter;
+	public static ExtentReports extent;
+	public static ExtentTest test;
+	public static String destination = "default";
+	
+	public static void initExtentReport() {
+		htmlReporter = new ExtentSparkReporter(System.getProperty("user.dir")+"/test-output/ExtendedReport.html");
+		
+		htmlReporter.config().setDocumentTitle("Automation Report");
+		htmlReporter.config().setReportName("Funtional Test Automation");
+		htmlReporter.config().setTheme(Theme.DARK);
+		
+		extent =new ExtentReports();
+		extent.attachReporter(htmlReporter);
+		extent.setSystemInfo("Hostname", "Localhost");
+		extent.setSystemInfo("OS", "Window 10");
+		extent.setSystemInfo("Tester", "Aarif");
+		extent.setSystemInfo("Browser", "Chrome");
+		
+	}
+	
+	public static void publishToExtentReport(ITestResult result) {
+		if(result.getStatus()==ITestResult.FAILURE) {
+			test.log(Status.FAIL, "Test case has failed, Test case is "+result.getName());
+			test.log(Status.FAIL, "Test case has failed, '"+result.getName()+"' Test case error is "+result.getThrowable());
+			test.fail(result.getThrowable());
+			test.addScreenCaptureFromPath(destination);
+		}else if(result.getStatus()==ITestResult.SKIP) {
+			test.log(Status.SKIP, "'"+result.getName()+"' has skipped"+", more info: "+ result.getSkipCausedBy());
+			
+		}else if(result.getStatus() == ITestResult.SUCCESS) {
+			test.log(Status.PASS, "'"+result.getName()+"' has successfully passed");
+		}
+	}
+	
+	public static void endReport() {
+		extent.flush();
+	}
+
+}
